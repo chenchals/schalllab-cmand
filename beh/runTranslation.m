@@ -2,7 +2,7 @@
 %% Parameters for Translation
 sessionBaseDir = 'data/Joule/cmanding/ephys/TESTDATA/In-Situ';
 baseSaveDir = 'dataProcessed/Joule/cmanding/ephys/TESTDATA/In-Situ';
-sessName = 'Joule-190731-121704';
+sessName = 'Joule-190726-102233';
 procLibDir = fullfile(sessionBaseDir,sessName,'ProcLib');
 eventDefFile = fullfile(procLibDir,'CMD/EVENTDEF.PRO');
 infosDefFile = fullfile(procLibDir,'CMD/INFOS.PRO');

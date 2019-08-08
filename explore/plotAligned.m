@@ -8,12 +8,14 @@ for ii = 1:numel(condFields)
     cond = condFields{ii};
     selectedTrls = conditions.(cond);
     spkTimes = arrayfun(fx_times,Task.(alignEvent)(selectedTrls),'UniformOutput',false);
-    spkTimesAligned = SpikeUtils.alignSpikeTimes(spkTimes,Task.(alignEvent)(selectedTrls));
+    alignTimes = Task.(alignEvent)(selectedTrls);
+    spkTimesAligned = SpikeUtils.alignSpikeTimes(spkTimes,alignTimes);
     spkRast = SpikeUtils.rasters(spkTimesAligned,timeWin);
     spkPsth = SpikeUtils.psth(spkTimesAligned,10,timeWin);
     
     % Output
-    %out.spkTimes = spkTimes;
+    out.spkTimes = spkTimes;
+    out.alignTimes = alignTimes;
     out.(cond).spkTimesAligned = spkTimesAligned;
     out.(cond).selectedTrls = selectedTrls;
     fns = fieldnames(spkRast);

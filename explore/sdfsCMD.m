@@ -1,4 +1,6 @@
-load('dataProcessed/Joule/cmanding/ephys/TESTDATA/In-Situ/Joule-190731-121704/Spikes.mat')
+loadDir = 'dataProcessed/Joule/cmanding/ephys/TESTDATA/In-Situ/Joule-190726-102233';
+load([loadDir '/Spikes.mat'])
+load([loadDir '/Events.mat'])
 
 
 TaskInfos = struct2table(TaskInfos);
@@ -7,14 +9,11 @@ TaskInfos = struct2table(TaskInfos);
 
 %% SDFs all trials where target is ON
 trlIdx = find(~isnan(Task.Target_));
-spkTimes = arrayfun(fx_times,Task.Target_(trlIdx),'UniformOutput',false);
 
-spkTimesAligned = SpikeUtils.alignSpikeTimes(spkTimes,Task.Target_(trlIdx));
-
-%spkRasters = SpikeUtils.rasters(spkTimesAligned',timeWin);
-spkPsth = SpikeUtils.psth(spkTimesAligned,1,timeWin);
-% plot it
-PlotUtils.plotPsth(spkPsth.psth,spkPsth.psthBins)
+selTrls = struct();
+selTrls.allTrlsTargOn = trlIdx;
+evtName ='Target_';
+outAllTrls.(evtName) = plotAligned(selTrls, Task,evtName,DSP01a);
 
 %% Low vs Hi Reward
 trlsHiRwdIdx = find(TaskInfos.UseRwrdDuration==320 & TaskInfos.IsGoCorrect==1);
@@ -29,6 +28,7 @@ for ii = 1: numel(events2Align)
     evtName = events2Align{ii};
     out.(evtName) = plotAligned(selTrls, Task,evtName,DSP01a);
 end
+%% DSP01c
 selTrls = struct();
 selTrls.hiReward = trlsHiRwdIdx;
 selTrls.loReward = trlsLoRwdIdx;

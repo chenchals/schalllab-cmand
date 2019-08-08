@@ -1,6 +1,6 @@
 sessionBaseDir = 'data/Joule/cmanding/ephys/TESTDATA/In-Situ';
 baseSaveDir = 'dataProcessed/Joule/cmanding/ephys/TESTDATA/In-Situ';
-sessName = 'Joule-190731-121704';
+sessName = 'Joule-190726-102233';
 spikesMatFile = fullfile(baseSaveDir,sessName,'Spikes.mat');
 lowerAlpha = 96;% 97='a' 98 ='b' etc
 waveformWin = (1:61)-20; % in time samples

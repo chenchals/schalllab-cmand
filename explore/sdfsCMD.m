@@ -1,10 +1,12 @@
-loadDir = 'dataProcessed/Joule/cmanding/ephys/TESTDATA/In-Situ/Joule-190726-102233';
+loadDir = 'dataProcessed/Joule/cmanding/ephys/TESTDATA/In-Situ/Joule-190731-121704';
 load([loadDir '/Spikes.mat'])
 load([loadDir '/Events.mat'])
 
 
 TaskInfos = struct2table(TaskInfos);
+taskInfoVars=TaskInfos.Properties.VariableNames';
 
+taskVars = fieldnames(Task);
 % Find spikes that happen in the window around specic times
 
 %% SDFs all trials where target is ON
@@ -15,30 +17,25 @@ selTrls.allTrlsTargOn = trlIdx;
 evtName ='Target_';
 outAllTrls.(evtName) = plotAligned(selTrls, Task,evtName,DSP01a);
 
-%% Low vs Hi Reward
-trlsHiRwdIdx = find(TaskInfos.UseRwrdDuration==320 & TaskInfos.IsGoCorrect==1);
-trlsLoRwdIdx = find(TaskInfos.UseRwrdDuration==80 & TaskInfos.IsGoCorrect==1);
+%% Low vs Hi Reward for all trials
+trlsHiRwdLogical = TaskInfos.UseRwrdDuration==320;
+trlsLoRwdLogical = TaskInfos.UseRwrdDuration==80;
+
+%% Low vs Hi Reward for GoCorrectTrials
+trlsHiRwdGoCorrectIdx = find(trlsHiRwdLogical==1 & TaskInfos.IsGoCorrect==1);
+trlsLoRwdGoCorrectIdx = find(trlsLoRwdLogical==1 & TaskInfos.IsGoCorrect==1);
 
 %% Low vs Hi Reward aligned on Saccade_
 events2Align = {'Target_','Saccade_','AudioStart_','JuiceStart_'};
 selTrls = struct();
-selTrls.hiReward = trlsHiRwdIdx;
-selTrls.loReward = trlsLoRwdIdx;
+selTrls.hiReward = trlsHiRwdGoCorrectIdx;
+selTrls.loReward = trlsLoRwdGoCorrectIdx;
 for ii = 1: numel(events2Align)
     evtName = events2Align{ii};
     out.(evtName) = plotAligned(selTrls, Task,evtName,DSP01a);
 end
-%% DSP01c
-selTrls = struct();
-selTrls.hiReward = trlsHiRwdIdx;
-selTrls.loReward = trlsLoRwdIdx;
-for ii = 1: numel(events2Align)
-    evtName = events2Align{ii};
-    out2.(evtName) = plotAligned(selTrls,Task,evtName,DSP01c);
-end
-%close all
 
-%% Cancelled trials
+%% Cancelled trials are STOP trials that are CORRECT
 selTrls = struct();
 cancelTrls = find(TaskInfos.IsCancel==1);
 selTrls.cancelled = cancelTrls;
@@ -47,20 +44,39 @@ for ii = 1: numel(events2Align)
     out3.(evtName) = plotAligned(selTrls,Task,evtName,DSP01a);
 end
 
+%% Low vs Hi Reward for STOP trials (Saccade_ ==> NogoEarlySaccade_, NogoSaccadePreSsd_,NogoSaccadePostSsd_, NogoLateSaccade_, 
+
+trlsHiRwdNogoIdx = find(trlsHiRwdLogical==1 & TaskInfos.TrialType==1 );% & isnan(Task.JuiceEnd_));
+trlsLoRwdNogoIdx = find(trlsLoRwdLogical==1 & TaskInfos.TrialType==1);% & isnan(Task.JuiceEnd_));
+
+events2Align = {'Target_','NogoEarlySaccade_', 'NogoSaccadePreSsd_','NogoSaccadePostSsd_', 'NogoLateSaccade_','AudioStart_','JuiceStart_'};
+selTrls = struct();
+selTrls.hiRewardNogo = trlsHiRwdNogoIdx;
+selTrls.loRewardNogo = trlsLoRwdNogoIdx;
+for ii = 1: numel(events2Align)
+    evtName = events2Align{ii};
+    out.(evtName) = plotAligned(selTrls, Task,evtName,DSP01a);
+end
+
+uniqUserSSDs = unique(TaskInfos.UseSsdVrCount(TaskInfos.TrialType==1));
+figure
+histogram((Task.StopSignal_ -Task.Target_),100)
+figure
+histogram(TaskInfos.StopSignalDuration(Task.StopSignal_>0),100)
 
 %% draw Waveforms for selection
 selTrls = struct();
 conditions = {'hiReward','loReward'};
 condColor = {'b','r'};
-selTrls.(conditions{1}) = trlsHiRwdIdx;
-selTrls.(conditions{2}) = trlsLoRwdIdx;
+selTrls.(conditions{1}) = trlsHiRwdGoCorrectIdx;
+selTrls.(conditions{2}) = trlsLoRwdGoCorrectIdx;
 
 events2Align = {'Target_','Saccade_','AudioStart_','JuiceStart_'};
 
 evtName = events2Align{3};
 condName = conditions{2};
 wavColor = condColor{2};
-alignWin = [20 35]; %in window 315-325 ms after alignment(hiReward-juice aligned)
+alignWin = [18 22]; %in window 315-325 ms after alignment(hiReward-juice aligned)
 
 cellId = 'DSP01a';
 wavId = 'WAV01a';
@@ -100,7 +116,7 @@ assert(nSpksInWin==mSpksInWin,sprintf('No of spikes are different [%i, / %i]', n
 %% Error trials SDFs
 events2Align = {'Target_','Saccade_','AudioStart_','JuiceStart_'};
 selTrls = struct();
-errTrls = find(TaskInfos.IsNonCancelledNoBrk==1);
+isNonCancelNoBrk = find(TaskInfos.IsNonCancelledNoBrk==1);
 selTrls.errorTrls = errTrls;
 for ii = 1: numel(events2Align)
     evtName = events2Align{ii};

@@ -10,7 +10,6 @@ function [nSampTOT] = writeBinary(obj,outputFile,int16ScaleFactor)
  if ~obj.isOpen % open all data files
      obj.openDataset();
  end    
-   %fidBin = fopen(fullfile(obj.dataPath,obj.session,[obj.session '.bin']),'wb');
    dataSize = obj.dataSize; %[nChannels x nSamples]
    % split nSamples into reasonable batchsizes
    nSampTOT = 0;

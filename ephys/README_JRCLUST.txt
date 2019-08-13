@@ -27,5 +27,10 @@
 7. Navigate to [dataProcessed]/[monk]/.../sessionName/jrclust in Matlab 
         jrc('detect-sort','master_jrclust.prm')
 
+8. Curate manually in JRCLUST:
+        jrc('manual','master_jrclust.prm')
+
+9. After done, run getJrclustSpikes to write spikes as familiar DSP01a... vars to Spikes.mat
+        Check the getJrclustSpikes.m file to setup
 
     

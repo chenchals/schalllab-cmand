@@ -12,7 +12,7 @@ classdef TdtRecording < jrclust.interfaces.RawRecording
         session;           % Session name
         dataFiles;         % raw data file(s), full path
         header;            % file header, if any
-        headerOffset;      % Number of header bytes before the first sample
+
         fileSizeBytes;     % Size of each dataFile in dataFiles, including header
         dataForm;          %'int16','single'...
         dataWidthBytes;    % number of bytes for each sample data point
@@ -25,43 +25,47 @@ classdef TdtRecording < jrclust.interfaces.RawRecording
     
     %% LIFECYCLE
     methods
-        function obj = TdtRecording(filename, hCfg) % dataType, nChans, headerOffset, 
+        function obj = TdtRecording(filename, hCfg) % dataType, nChans, headerOffset,
             %RECORDING Construct an instance of this class
             % check filename exists
             obj = obj@jrclust.interfaces.RawRecording(filename, hCfg);
             if obj.isError
                 return;
             end
-
+            
             % set a filtered path
             [~, ~, ext] = fileparts(obj.rawPath);
             obj.filtPath = jrclust.utils.subsExt(obj.rawPath, ['.filtered' ext]);
             obj.filteredFid = -1;
-
+            
             % set object data type
             obj.dataType = hCfg.dataType;
-
+            
             % set headerOffset
             obj.headerOffset = hCfg.headerOffset;
             
             
-                d = dir(source);
-                % sort by channel number
-                [~,chNos]=sort(cellfun(@(x) str2double(x{1}),regexp( {d.name}, '_Ch(\d+)', 'tokens' )));
-                obj.dataFiles = strcat({d(chNos).folder},filesep,{d(chNos).name})';
-                [obj.dataPath,obj.session] = fileparts(fileparts(obj.dataFiles{1}));
-                obj.header = readHeader(obj);
-                obj.headerOffset = 40;
-                obj.fileSizeBytes = obj.header.fileSizeBytes;
-                obj.dataForm = obj.header.dForm;
-                obj.dataWidthBytes = obj.header.sampleWidthBytes;
-                obj.dataFs = obj.header.fs;
-                obj.dataSize = [obj.header.totalNumChannels, ... % nChannels
-                                (obj.fileSizeBytes-obj.headerOffset)/obj.dataWidthBytes...% nSamplesPerChannel
-                               ]; 
-                       
+            d = dir(fullfile(obj.rawPath,'*_Wav1_*.sev'));
+            % sort by channel number
+            [~,chNos]=sort(cellfun(@(x) str2double(x{1}),regexp( {d.name}, '_Ch(\d+)', 'tokens' )));
+            obj.dataFiles = strcat({d(chNos).folder},filesep,{d(chNos).name})';
+            [obj.dataPath,obj.session] = fileparts(fileparts(obj.dataFiles{1}));
+            obj.header = readHeader(obj);
+            
+            
+            obj.fileSizeBytes = obj.header.fileSizeBytes;
+            obj.dataForm = obj.header.dForm;
+            obj.dataWidthBytes = obj.header.sampleWidthBytes;
+            obj.dataFs = obj.header.fs;
+            obj.dataSize = [obj.header.totalNumChannels, ... % nChannels
+                (obj.fileSizeBytes-obj.headerOffset)/obj.dataWidthBytes...% nSamplesPerChannel
+                ];
+            
+            obj.headerOffset = 40;
+            obj.fSizeBytes = obj.headerOffset + (obj.fileSizeBytes-obj.headerOffset)*obj.header.totalNumChannels;
+            
             obj.dshape = obj.dataSize;
-
+            
             obj.rawIsOpen = 0;
             obj.filtIsOpen = 0;
         end
@@ -69,15 +73,6 @@ classdef TdtRecording < jrclust.interfaces.RawRecording
 
     %% GETTERS/SETTERS
     methods
-        % rawData
-        function rd = get.rawData(obj)
-            if obj.rawIsOpen
-                
-                rd = obj.rawData.Data.Data;
-            else
-                rd = [];
-            end
-        end
-    end
+     end
 end
 

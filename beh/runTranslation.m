@@ -2,13 +2,23 @@
 %% Parameters for Translation
 sessionBaseDir = 'data/Joule/cmanding/ephys/TESTDATA/In-Situ';
 baseSaveDir = 'dataProcessed/Joule/cmanding/ephys/TESTDATA/In-Situ';
-sessName = 'Joule-190726-102233';
-procLibDir = fullfile(sessionBaseDir,sessName,'ProcLib');
+sessionDirs = dir(fullfile(sessionBaseDir,'Joule*'));
+
+for s= 1:size(sessionDirs,1)
+sessName = sessionDirs(s).name;
+sessionDir = fullfile(sessionDirs(s).folder,sessName);
+
+if exist(fullfile(sessionDir,'Events.mat'), 'file')...
+   && exist(fullfile(sessionDir,'Eyes.mat'), 'file')
+   fprintf('***Translated session [%s] already present! Continuing with next session\n',sessName);
+   continue;
+end
+fprintf('Translating session [%s]...',sessName)
+procLibDir = fullfile(sessionDir,'ProcLib');
 eventDefFile = fullfile(procLibDir,'CMD/EVENTDEF.PRO');
 infosDefFile = fullfile(procLibDir,'CMD/INFOS.PRO');
-
 % set it up in TranslateTDT
-opts.sessionDir = fullfile(sessionBaseDir,sessName);
+opts.sessionDir = sessionDir;
 opts.baseSaveDir = baseSaveDir;
 opts.eventDefFile = eventDefFile;
 opts.infosDefFile = infosDefFile; 
@@ -29,9 +39,14 @@ opts.hasEdfDataFile = 0;
 
 
 ZZ = TDTTranslator(opts);
-
-
+try
 [Task, TaskInfos, TrialEyes, EventCodec, InfosCodec, SessionInfo] = ZZ.translate(0);
+fprintf('Done!\n')
+catch me
+    fprintf('***Failed translation for session [%s]\n',sessName);
+   fprintf('Exception\n: %s\n', evalc('[disp(me)]'));
+    
+end
 
-
+end
 

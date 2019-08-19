@@ -43,11 +43,35 @@ classdef TdtRecording < jrclust.interfaces.RawRecording
             
             % set headerOffset
             obj.headerOffset = hCfg.headerOffset;
+
+            if exist(obj.rawPath,'file')            
+                [rPath,rFile,~] = fileparts(obj.rawPath);
+                obj.rawPath = rPath;
+                % rewrite rawRecordings
+                hCfg.rawRecordings = {rPath};
+            else
+                obj.errMsg = 'TDTRecording unable to determine raw files to use. Check your rawRecordings value?';
+                obj.isError = 1;
+                return;
+            end
             
-            
-            d = dir(fullfile(obj.rawPath,'*_Wav1_*.sev'));
+            if contains(rFile,'_Wav1_')
+                d = dir(fullfile(obj.rawPath,'*_Wav1_*.sev'));
+            elseif contains(rFile,'_RSn1_')
+                d = dir(fullfile(obj.rawPath,'*_RSn1_*.sev'));               
+            else
+                obj.errMsg = 'TDTRecording unknown raw file pattern. Check your rawRecordings value?';
+                obj.isError = 1;
+                return;
+            end   
+
             % sort by channel number
-            [~,chNos]=sort(cellfun(@(x) str2double(x{1}),regexp( {d.name}, '_Ch(\d+)', 'tokens' )));
+            if contains([d.name],'ch1.sev')
+                [~,chNos]=sort(cellfun(@(x) str2double(x{1}),regexp( {d.name}, '_ch(\d+)', 'tokens' )));
+            else
+                [~,chNos]=sort(cellfun(@(x) str2double(x{1}),regexp( {d.name}, '_Ch(\d+)', 'tokens' )));
+            end
+            
             obj.dataFiles = strcat({d(chNos).folder},filesep,{d(chNos).name})';
             [obj.dataPath,obj.session] = fileparts(fileparts(obj.dataFiles{1}));
             obj.header = readHeader(obj);

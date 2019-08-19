@@ -1,4 +1,4 @@
-nChan = 4;
+nChan = 32;
 chanSpacing = 150;
 
 % 

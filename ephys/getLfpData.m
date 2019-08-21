@@ -15,4 +15,5 @@ for ch = 1:numel(d)
     z.(lfpVar)=memFile.Data;
     fprintf('saving LFP variable %s to file %s\n',lfpVar,lfpMatFile);
     save(lfpMatFile,'-append','-struct','z');
+    clearvars z
 end

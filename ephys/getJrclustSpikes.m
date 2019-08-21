@@ -1,6 +1,6 @@
 sessionBaseDir = 'data/Joule/cmanding/ephys/TESTDATA/In-Situ';
 baseSaveDir = 'dataProcessed/Joule/cmanding/ephys/TESTDATA/In-Situ';
-sessName = 'Joule-190726-102233';
+sessName = 'Joule-190820-124819';
 spikesMatFile = fullfile(baseSaveDir,sessName,'Spikes.mat');
 lowerAlpha = 96;% 97='a' 98 ='b' etc
 waveformWin = (1:61)-20; % in time samples
@@ -9,7 +9,7 @@ d = dir(fullfile(sessionBaseDir,sessName,'*_Wav1_*.sev'));
 [~,chNos]=sort(cellfun(@(x) str2double(x{1}),regexp( {d.name}, '_Ch(\d+)', 'tokens' )));
 dataFiles = strcat({d(chNos).folder},filesep,{d(chNos).name})';
 % jrclust output
-jrcResFile = fullfile(baseSaveDir,sessName,'jrclust','master_jrclust_res.mat');
+jrcResFile = fullfile(baseSaveDir,sessName,'jrclustTh5','master_tdt_jrclust_res.mat');
 res = load(jrcResFile);
 allSpikes = struct();
 channels = unique(res.spikeSites);

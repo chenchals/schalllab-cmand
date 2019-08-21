@@ -1,6 +1,13 @@
-loadDir = 'dataProcessed/Joule/cmanding/ephys/TESTDATA/In-Situ/Joule-190731-121704';
-load([loadDir '/Spikes.mat'])
+loadDir = 'dataProcessed/Joule/cmanding/ephys/TESTDATA/In-Situ/Joule-190820-124819';
 load([loadDir '/Events.mat'])
+
+cellId = 'DSP13a';
+wavId = 'WAV13a';
+
+unitSpk = load([loadDir '/Spikes.mat'],cellId);
+unitSpk = unitSpk.(cellId);
+unitWav = load([loadDir '/Spikes.mat'],wavId);
+unitWav = unitWav.(wavId);
 
 
 TaskInfos = struct2table(TaskInfos);
@@ -15,11 +22,11 @@ trlIdx = find(~isnan(Task.Target_));
 selTrls = struct();
 selTrls.allTrlsTargOn = trlIdx;
 evtName ='Target_';
-outAllTrls.(evtName) = plotAligned(selTrls, Task,evtName,DSP01a);
+outAllTrls.(evtName) = plotAligned(selTrls, Task,evtName,unitSpk);
 
 %% Low vs Hi Reward for all trials
-trlsHiRwdLogical = TaskInfos.UseRwrdDuration==320;
-trlsLoRwdLogical = TaskInfos.UseRwrdDuration==80;
+trlsHiRwdLogical = TaskInfos.UseRwrdDuration==400;
+trlsLoRwdLogical = TaskInfos.UseRwrdDuration==40;
 
 %% Low vs Hi Reward for GoCorrectTrials
 trlsHiRwdGoCorrectIdx = find(trlsHiRwdLogical==1 & TaskInfos.IsGoCorrect==1);
@@ -32,7 +39,7 @@ selTrls.hiReward = trlsHiRwdGoCorrectIdx;
 selTrls.loReward = trlsLoRwdGoCorrectIdx;
 for ii = 1: numel(events2Align)
     evtName = events2Align{ii};
-    out.(evtName) = plotAligned(selTrls, Task,evtName,DSP01a);
+    out.(evtName) = plotAligned(selTrls, Task,evtName,unitSpk);
 end
 
 %% Cancelled trials are STOP trials that are CORRECT
@@ -41,7 +48,7 @@ cancelTrls = find(TaskInfos.IsCancel==1);
 selTrls.cancelled = cancelTrls;
 for ii = 1: numel(events2Align)
     evtName = events2Align{ii};
-    out3.(evtName) = plotAligned(selTrls,Task,evtName,DSP01a);
+    out3.(evtName) = plotAligned(selTrls,Task,evtName,unitSpk);
 end
 
 %% Low vs Hi Reward for STOP trials (Saccade_ ==> NogoEarlySaccade_, NogoSaccadePreSsd_,NogoSaccadePostSsd_, NogoLateSaccade_, 
@@ -55,7 +62,7 @@ selTrls.hiRewardNogo = trlsHiRwdNogoIdx;
 selTrls.loRewardNogo = trlsLoRwdNogoIdx;
 for ii = 1: numel(events2Align)
     evtName = events2Align{ii};
-    out.(evtName) = plotAligned(selTrls, Task,evtName,DSP01a);
+    out.(evtName) = plotAligned(selTrls, Task,evtName,unitSpk);
 end
 
 uniqUserSSDs = unique(TaskInfos.UseSsdVrCount(TaskInfos.TrialType==1));
@@ -76,19 +83,13 @@ events2Align = {'Target_','Saccade_','AudioStart_','JuiceStart_'};
 evtName = events2Align{3};
 condName = conditions{2};
 wavColor = condColor{2};
-alignWin = [18 22]; %in window 315-325 ms after alignment(hiReward-juice aligned)
-
-cellId = 'DSP01a';
-wavId = 'WAV01a';
-
-eval(['spkT = ' cellId ';']);
-eval(['wav = ' wavId ';']);
+alignWin = [-100 100]; %in window 315-325 ms after alignment(hiReward-juice aligned)
 
 evtTimes = Task.(evtName)(selTrls.(condName));
-spkTimesIdxInWin = cell2mat(arrayfun(@(x) find(spkT >= x+alignWin(1) & spkT < x+alignWin(2)),...
+spkTimesIdxInWin = cell2mat(arrayfun(@(x) find(unitSpk >= x+alignWin(1) & unitSpk < x+alignWin(2)),...
                             evtTimes,'UniformOutput',false));
 % Plot selected waveforms
-selWaves = wav(spkTimesIdxInWin,:);
+selWaves = unitWav(spkTimesIdxInWin,:);
 nPoints = size(selWaves,2);
 nWaves = size(selWaves,1);
 % make a y vector
@@ -120,7 +121,7 @@ isNonCancelNoBrk = find(TaskInfos.IsNonCancelledNoBrk==1);
 selTrls.errorTrls = errTrls;
 for ii = 1: numel(events2Align)
     evtName = events2Align{ii};
-    out5.(evtName) = plotAligned(selTrls,Task,evtName,DSP01a);
+    out5.(evtName) = plotAligned(selTrls,Task,evtName,unitSpk);
 end
 
 %%

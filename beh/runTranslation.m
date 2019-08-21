@@ -2,7 +2,7 @@
 %% Parameters for Translation
 sessionBaseDir = 'data/Joule/cmanding/ephys/TESTDATA/In-Situ';
 baseSaveDir = 'dataProcessed/Joule/cmanding/ephys/TESTDATA/In-Situ';
-sessionDirs = dir(fullfile(sessionBaseDir,'Joule*'));
+sessionDirs = dir(fullfile(sessionBaseDir,'Joule-190820*'));
 
 for s= 1:size(sessionDirs,1)
 sessName = sessionDirs(s).name;

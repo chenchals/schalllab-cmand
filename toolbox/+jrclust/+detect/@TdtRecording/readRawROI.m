@@ -17,7 +17,7 @@ function [roi] = readRawROI(obj, rows, cols)
         end
         roi = cell2mat(temp)';
         % Convert to microvolts (assume scaling 'milli' is used)
-        roi = roi.*1000; 
+        roi = roi.*10^3; 
     catch EX
         fprintf('Exception in readRaw...\n');
         obj.dataSize

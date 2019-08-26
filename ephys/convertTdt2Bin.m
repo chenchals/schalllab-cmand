@@ -1,4 +1,4 @@
-function [ops] = convertWav2Bin(ops)
+function [ops] = convertTdt2Bin(ops)
 % convert tdt _Wav1_ .sev files into binary file:
 %   no header and
 %   scaled to int16
@@ -28,7 +28,7 @@ outputFile = ops.fbinary;
     signalMilliVolts = [-1 1];
     int16ScaleFactor = 2^16/range(signalMilliVolts);
     fprintf('Factor for scaling TDT data from single to int16 : %i\n',int16ScaleFactor); 
-    fileSuffix = '*Wav1_*.sev';
+    fileSuffix = ops.tdtFilePattern; %'*Wav1_*.sev';
     ds = fullfile(ops.dataDir,fileSuffix);    
     fprintf('Using files with pattern : %s\n',fileSuffix);
     T = interface.IDataAdapter.newDataAdapter('sev',ds,'rawDataScaleFactor',1);

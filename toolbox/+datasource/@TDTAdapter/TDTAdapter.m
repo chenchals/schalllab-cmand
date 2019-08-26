@@ -16,7 +16,7 @@ classdef TDTAdapter < interface.IDataAdapter
             try
                 d = dir(source);
                 % sort by channel number
-                [~,chNos]=sort(cellfun(@(x) str2double(x{1}),regexp( {d.name}, '_Ch(\d+)', 'tokens' )));
+                [~,chNos]=sort(cellfun(@(x) str2double(x{1}),regexp( {d.name}, '_[cC]h(\d+)', 'tokens' )));
                 obj.dataFiles = strcat({d(chNos).folder},filesep,{d(chNos).name})';
                 [obj.dataPath,obj.session] = fileparts(fileparts(obj.dataFiles{1}));
                 obj.header = readHeader(obj);

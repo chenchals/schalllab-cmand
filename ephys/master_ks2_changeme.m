@@ -1,19 +1,20 @@
 
-dataPath = 'data/Joule/cmanding/ephys/TESTDATA/In-Situ';
-analysisDir = 'dataProcessed/Joule/cmanding/ephys/TESTDATA/In-Situ';
-session = 'Joule-190731-121704';
-chanMapFile = '~/Projects/lab-schall/schalllab-translate/scratch/spikeSort/channelMaps/tdt_4Chan-150um.mat';
+dataPath = 'C:/scratch/subravcr/ksDataProcessed/Cajal';
+analysisDir = 'C:/scratch/subravcr/ksDataProcessed/Cajal';
+session = 'Cajal-190315-104808';
+chanMapFile = 'C:/Projects/lab-schall/schalllab-cmand/toolbox/probes/linear-probe-1-36chan-150um.mat';
 sessionAnalysisDir = fullfile(analysisDir,session);
-nChan = 4;
+nChan = 36;
 %% Params and configuration for Kilosort2
-ks2Paths = genpath('~/Projects/lab-schall/Kilosort2');
+ks2Paths = genpath('C:/Projects/lab-schall/Kilosort2');
 addpath(ks2Paths);
-npyPths = genpath('~/Projects/lab-schall/npy-matlab');
+npyPths = genpath('C:/Projects/lab-schall/npy-matlab');
 addpath(npyPths);
 
 %% Data stuff
 ops.dataDir             = fullfile(dataPath,session);   
 ops.datatype            = 'tdt2Bin';  % binary ('dat', 'bin') or 'openEphys'
+ops.tdtFilePattern      = '*_RSn1_ch*.sev';
 ops.root                = sessionAnalysisDir;
 % ops.fbinary             = fullfile(ops.root, [session '.bin']); % will be created for 'openEphys'
 ops.fbinary             = fullfile(ops.root, [session '.bin']); % will be created for 'openEphys'

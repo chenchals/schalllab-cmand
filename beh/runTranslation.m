@@ -1,8 +1,11 @@
+sourceDrive_data = 'T:';
+source_dataProcessed = 'E:/Dropbox/SCHALL_preProcessingData';
 % 
 %% Parameters for Translation
-sessionBaseDir = 'data/Joule/cmanding/ephys/TESTDATA/In-Situ';
-baseSaveDir = 'dataProcessed/Joule/cmanding/ephys/TESTDATA/In-Situ';
-sessionDirs = dir(fullfile(sessionBaseDir,'Joule-190820*'));
+sessionBaseDir = [sourceDrive_data '/data/Joule/cmanding/ephys/TESTDATA/In-Situ'];
+baseSaveDir = [source_dataProcessed '/dataProcessed/Joule/cmanding/ephys/TESTDATA/In-Situ'];
+% mkdir(baseSaveDir)  % Ensure baseSaveDir is already created.
+sessionDirs = dir(fullfile(sessionBaseDir,'Joule-190827-13460*')); % replace the last digit of the single directlry name with a *
 
 for s= 1:size(sessionDirs,1)
 sessName = sessionDirs(s).name;

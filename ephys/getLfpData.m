@@ -1,10 +1,12 @@
-sessionBaseDir = 'data/Joule/cmanding/ephys/TESTDATA/In-Situ';
-baseSaveDir = 'dataProcessed/Joule/cmanding/ephys/TESTDATA/In-Situ';
-sessName = 'Joule-190820-124819';
+sessionBaseDir = 'E:/data/Joule/cmanding/ephys/TESTDATA/In-Situ';
+baseSaveDir = 'E:/Dropbox/SCHALL_preProcessingData/dataProcessed/Joule/cmanding/ephys/TESTDATA/In-Situ';
+sessName = 'Joule-190827-134608';
 lfpMatFile = fullfile(baseSaveDir,sessName,'Lfps.mat');
 % LFP files
 d = dir(fullfile(sessionBaseDir,sessName,'*_Lfp1_*.sev'));
-save(lfpMatFile,'sessName');
+lfpHeader = TDTbin2mat(d(1).folder,'Headers',1,'Store','Lfp1');
+lfpHeader = lfpHeader.stores.Lfp1;
+save(lfpMatFile,'lfpHeader');
 for ch = 1:numel(d)   
     lfpFn = fullfile(d(ch).folder,d(ch).name);
     fprintf('reading file: %s...',d(ch).name);

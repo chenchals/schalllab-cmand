@@ -48,6 +48,7 @@ classdef (Abstract=true) IDataAdapter < handle
     %% Abstract Methods for reading from raw file(s)
     methods (Abstract=true)
         data = readRaw(obj, nChannels, nSamples);
+        data = readWaveforms(obj,wfSampleWin, wfTime);
     end
     
     %% Getter/Setter methods

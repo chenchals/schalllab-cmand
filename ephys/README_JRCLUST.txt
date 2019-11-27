@@ -10,6 +10,7 @@
 3. Convert *_Wav1_*.sev files to binary file.
         convertTdt2Bin(ops) : ops.dataDir [monk]/sessionDir
                               ops.fbinary fullfile Path: Usually ops.dataDir/sessionName.bin
+                              ops.tdtFilePattern File pattern for TDT wav files ex. '*Wav1_*.sev'
 
 4. Before converting take a peek at convertTdt2Bin.m for how it is scaling the single values since that factor will be needed for spike sorting
 

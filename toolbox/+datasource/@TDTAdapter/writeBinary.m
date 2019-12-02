@@ -22,9 +22,11 @@ function [nSampTOT] = writeBinary(obj,outputFile,int16ScaleFactor)
    fidw = fopen(outputFile,'w');
    tic
    for ii = 1:nBatches
-       data = int16(obj.readRaw(batchSize(1),batchSize(2)).*int16ScaleFactor);
+       rawData = obj.readRaw(batchSize(1),batchSize(2));
+       data = int16(rawData.*int16ScaleFactor);
        if ~isempty(data)
-           fwrite(fidw,data(:)','int16');
+           data = data(:)';
+           fwrite(fidw,data,'int16');
            nSampTOT = nSampTOT + numel(data);
            fprintf('Wrote batch %i of %i, %.4f\n',ii,nBatches,toc);
        end

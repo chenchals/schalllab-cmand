@@ -1,8 +1,8 @@
 
 projectsDir = 'C:/Users/subravcr/Documents/Projects/lab-schall/';
-dataPath = 'C:/scratch/subravcr/ksData/Cajal';
-analysisDir = 'C:/scratch/subravcr/ksDataProcessed/Cajal';
-session = 'Cajal-190127-100227';
+dataPath = 'C:/scratch/subravcr/ksData/Darwin';
+analysisDir = 'C:/scratch/subravcr/ksDataProcessed/Darwin';
+session = 'Darwin-190724-094624';
 chanMapFile = [projectsDir 'schalllab-cmand/toolbox/probes/linear-probe-1-32chan-150um.mat'];
 sessionAnalysisDir = fullfile(analysisDir,session);
 nChan = 32;
@@ -27,7 +27,7 @@ ops.fbinary             = fullfile(ops.root, [session '.bin']); % will be create
 rootZ                   = fullfile(ops.root,'ks2');
 ops.fproc               = fullfile(rootZ, 'temp_wh.dat'); % residual from RAM of preprocessed data
 % ops.trange              = [0 Inf];	% time range to sort
-ops.trange              = [0 1000];	% time range to sort
+ops.trange              = [0 Inf];	% time range to sort
 % need ops.nt0 for fitTemplates
 ops.nt0                 = 61; % length of samples for waveform data?
 

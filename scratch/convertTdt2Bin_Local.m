@@ -1,4 +1,4 @@
-function [ops] = convertTdt2Bin(ops)
+function [ops] = convertTdt2Bin_Local(ops)
 % convert tdt _Wav1_ .sev files into binary file:
 %   no header and
 %   scaled to int16

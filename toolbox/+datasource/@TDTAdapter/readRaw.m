@@ -8,8 +8,9 @@ end
 p = gcp('nocreate');
 try
     if obj.lastSampleRead == obj.nSamplesPerChannel
-        data = [];
-        return;
+        % read from begining again
+        obj.lastSampleRead = 0;
+        %return;
     end
     sampleStart = obj.lastSampleRead + 1;
     sampleEnd = obj.lastSampleRead + nSamples;

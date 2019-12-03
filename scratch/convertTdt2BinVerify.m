@@ -1,5 +1,5 @@
-monk = 'Cajal/';
-session = 'Cajal-190315-104808';
+monk = 'Darwin/';
+session = 'Darwin-190828-100527';
 %Session Cajal-190127-100227 --> minmax = [-0.00815744 0.00300563]
 %Session Cajal-190127-111956 --> minmax = [-0.03991181 0.17693886], minDiff
 %= [0.000000015832] dataSize: [32 403226608]
@@ -9,7 +9,13 @@ session = 'Cajal-190315-104808';
 %minDiff = [0.000000000029] dataSize: [32 443281408]
 
 
-wavOrRsn = '*RSn1_*';%'*Wav1_*';%'*RSn1_*';
+%/scratch/subravcr/ksData/Darwin/Darwin-190828-100527/RSn1/*RSn1_ch1.sev
+%Session Darwin-190828-100527/RSn1 --> minmax = [-0.00620832 0.01620482],
+%minDiff = [0.000000015949] 
+%Session Darwin-190828-100527 --> minmax = [-2.28813696 5.78291225],
+%minDiff = [0.000000000015] 
+
+wavOrRsn = '*Wav1_*';%'*Wav1_*';%'*RSn1_*';
 ops.dataDir = ['ksData/' monk session]; 
 ops.tdtFilePattern=[wavOrRsn '.sev'];
 ops.fbinary = ['ksDataProcessed/' monk session '/' session '.bin'];
@@ -27,30 +33,20 @@ sevDatMinMax = [];
 minDiff =[];
 tempMinMax = [];
 tempMinDiff =[];
-try
-    fracSize = 1.0;
-    sampleWindow = ceil(maxSamples*fracSize);
-    sevData = T.readRaw(nChan,max(sampleWindow));
-    sevDatMinMax = [min(min(sevData)) max(max(sevData))];
-    d = abs(diff(sevData,1,1));
-    minDiff = min(d(d>0));
-catch me
-    % Requested 32x403226608 (96.1GB) array exceeds maximum array size
-    % preference. Creation of arrays greater than this limit ... error
-    fprintf('\nLarge array requested... doing doing min-max for each channel\n');
-    fprintf (' Doing channel No ...');
-    for ii = 1:nChan
-        fprintf(repmat('\b', 1, 3));
-        fprintf(' %02d',ii)
-        sevData = T.readChannel(ii);
-        tempMinMax(ii,:) = [min(min(sevData)) max(max(sevData))];
-        d = abs(diff(sevData));
-        tempMinDiff(ii,1) = min(d(d>0));
-    end
-    fprintf('\n');
-    sevDatMinMax = [min(min(tempMinMax)) max(max(tempMinMax))];
-    minDiff = min(min(tempMinDiff));
-end    
+
+fprintf (' Doing channel No ...');
+for ii = 1:nChan
+    fprintf(repmat('\b', 1, 3));
+    fprintf(' %02d',ii)
+    sevData = T.readChannel(ii);
+    tempMinMax(ii,:) = [min(min(sevData)) max(max(sevData))];
+    d = abs(diff(sevData));
+    tempMinDiff(ii,1) = min(d(d>0));
+end
+fprintf('\n');
+sevDatMinMax = [min(min(tempMinMax)) max(max(tempMinMax))];
+minDiff = min(min(tempMinDiff));
+
 
 fprintf('Session %s --> minmax = [%0.8f %0.8f], minDiff = [%0.12f]\n',session,sevDatMinMax(1), sevDatMinMax(2),minDiff);
 
@@ -78,6 +74,17 @@ klBin10Mem = memmapfile(klBin10,'Format','int16')
 
 klSev10Mem = memmapfile(klSev10,'Offset', 40,'Format','single')
 
+%% Verify wav and RSn file data....
+wavCh11 = 'ksData/Darwin/Darwin-190828-100527/SchallLab1-160315-114049_Darwin-190828-100527_Wav1_Ch1.sev';
+rsnCh11 = 'ksData/Darwin/Darwin-190828-100527/RSn1/Unnamed_RSn1_ch11.sev';
+wavMemFile = memmapfile(wavCh11,'Offset', 40, 'Format','single')
+rsnMemFile = memmapfile(rsnCh11,'Offset', 40, 'Format','single')
+
+figure
+yyaxis('left')
+plot(wavMemFile.Data(1:10000))
+yyaxis('right')
+plot(rsnMemFile.Data(1:10000))
 
 
 

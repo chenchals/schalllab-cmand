@@ -52,6 +52,20 @@ classdef TDTAdapter < interface.IDataAdapter
             buffer = obj.readRaw(nChannels, nSamples);
         end
         
+        % Read single channel data
+        function [ buffer ] = readChannel(obj,chanNo)
+            nChannels = obj.dataSize(1);
+            if chanNo > nChannels
+                error('Channel no.[%d] is greater max channelNo [%d]\n',chanNo,nChannels);
+            end
+            if ~obj.isOpen
+                obj.openDataset();
+            end
+            memFile = obj.memmapDataFiles{chanNo};
+            buffer = memFile.Data;
+        end
+        
+        
     end
     
     %% Private Methods

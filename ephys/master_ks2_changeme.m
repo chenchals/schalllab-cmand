@@ -1,14 +1,20 @@
 
-dataPath = 'C:/scratch/subravcr/ksDataProcessed/Cajal';
+projectsDir = 'C:/Users/subravcr/Documents/Projects/lab-schall/';
+dataPath = 'C:/scratch/subravcr/ksData/Cajal';
 analysisDir = 'C:/scratch/subravcr/ksDataProcessed/Cajal';
-session = 'Cajal-190315-104808';
-chanMapFile = 'C:/Projects/lab-schall/schalllab-cmand/toolbox/probes/linear-probe-1-36chan-150um.mat';
+session = 'Cajal-190127-100227';
+chanMapFile = [projectsDir 'schalllab-cmand/toolbox/probes/linear-probe-1-32chan-150um.mat'];
 sessionAnalysisDir = fullfile(analysisDir,session);
-nChan = 36;
+nChan = 32;
+%% Add to path for conversion to bin file
+toolboxPaths = genpath([projectsDir 'schalllab-cmand/toolbox']);
+addpath(toolboxPaths);
+ePhysPaths = genpath([projectsDir 'schalllab-cmand/ePhys']);
+addpath(ePhysPaths);
 %% Params and configuration for Kilosort2
-ks2Paths = genpath('C:/Projects/lab-schall/Kilosort2');
+ks2Paths = genpath([projectsDir 'Kilosort2']);
 addpath(ks2Paths);
-npyPths = genpath('C:/Projects/lab-schall/npy-matlab');
+npyPths = genpath([projectsDir 'npy-matlab']);
 addpath(npyPths);
 
 %% Data stuff
@@ -21,7 +27,7 @@ ops.fbinary             = fullfile(ops.root, [session '.bin']); % will be create
 rootZ                   = fullfile(ops.root,'ks2');
 ops.fproc               = fullfile(rootZ, 'temp_wh.dat'); % residual from RAM of preprocessed data
 % ops.trange              = [0 Inf];	% time range to sort
-ops.trange              = [0 Inf];	% time range to sort
+ops.trange              = [0 1000];	% time range to sort
 % need ops.nt0 for fitTemplates
 ops.nt0                 = 61; % length of samples for waveform data?
 
@@ -42,7 +48,7 @@ ops.nNeigh              = [3]; % visualization only (Phy): number of neighboring
 %% Channel map file
 % define the channel map as a filename (string) or simply an array
 [~,fn]=fileparts(chanMapFile);
-dest = fullfile(ops.root,[fn '.mat']);
+dest = fullfile(rootZ,[fn '.mat']);
 copyfile(chanMapFile, dest,'f');
 ops.chanMap             = dest; % make this file using createChannelMapFile.m
 
@@ -53,10 +59,10 @@ ops.fshigh = 300;
 ops.minfr_goodchannels  = 0.1; 
 
 % threshold on projections (like in Kilosort1, can be different for last pass like [10 4])
-ops.Th                  = [6 12 12];  
+ops.Th                  = [10 4];  
 
 % how important is the amplitude penalty (like in Kilosort1, 0 means not used, 10 is average, 50 is a lot) 
-ops.lam                 = [10 30 30];  
+ops.lam                 = [10];  
 
 % splitting a cluster at the end requires at least this much isolation for each sub-cluster (max = 1)
 ops.AUCsplit            = 0.9; 
@@ -71,7 +77,7 @@ ops.momentum            = [20 400];
 ops.sigmaMask           = 30; 
 
 % threshold crossings for pre-clustering (in PCA projection space)
-ops.ThPre               = 6; 
+ops.ThPre               = 8; 
 %% danger, changing these settings can lead to fatal errors
 % options for determining PCs
 ops.spkTh               = -4.5;      % spike threshold in standard deviations (-6)
@@ -81,16 +87,16 @@ ops.nskip               = 1;  % how many batches to skip for determining spike P
 ops.Nfilt               = 1024; % max number of clusters
 ops.nfilt_factor        = 10; % max number of clusters per good channel (even temporary ones)
 ops.ntbuff              = 64;    % samples of symmetrical buffer for whitening and spike detection
-ops.NT                  = 32*64*1024+ ops.ntbuff; % must be multiple of 32 + ntbuff. This is the batch size (try decreasing if out of memory). 
-ops.whiteningRange      = 32; % number of channels to use for whitening each channel
+ops.NT                  = 512*1024+ ops.ntbuff; % must be multiple of 32 + ntbuff. This is the batch size (try decreasing if out of memory). 
+ops.whiteningRange      = nChan; % number of channels to use for whitening each channel
 ops.nSkipCov            = 1; % compute whitening matrix from every N-th batch
-ops.scaleproc           = 2^16;   % int16 scaling of whitened data
+ops.scaleproc           = 1;   % int16 scaling of whitened data
 ops.nPCs                = 3; % how many PCs to project the spikes into
-ops.useRAM              = 0; % not yet available
+ops.useRAM              = 1; % not yet available
 
 %% directives
 ops.verbose             = 1;
-ops.showfigures         = 0;
+ops.showfigures         = 1;
 ops.GPU                 = 1; % has to be 1, no CPU version yet, sorry
 ops.parfor              = 1;
 ops.useRAM              = 0; % not yet available
@@ -155,3 +161,5 @@ copyfile(src,dest,'f');
 %% Remove from paths...
 rmpath(npyPths)
 rmpath(ks2Paths)
+rmpath(toolboxPaths)
+rmpath(ePhysPaths)

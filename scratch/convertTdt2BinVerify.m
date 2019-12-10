@@ -75,34 +75,36 @@ klBin10Mem = memmapfile(klBin10,'Format','int16')
 klSev10Mem = memmapfile(klSev10,'Offset', 40,'Format','single')
 
 %% Verify wav and RSn file data....
+fs = 24414.0625;
 wavCh11 = 'ksData/Darwin/Darwin-190828-100527/SchallLab1-160315-114049_Darwin-190828-100527_Wav1_Ch1.sev';
 rsnCh11 = 'ksData/Darwin/Darwin-190828-100527/RSn1/Unnamed_RSn1_ch11.sev';
-wavMemFile = memmapfile(wavCh11,'Offset', 40, 'Format','single')
-rsnMemFile = memmapfile(rsnCh11,'Offset', 40, 'Format','single')
-filtRsn = bpFilter(rsnMemFile.Data(1:5000));
+wavMemFile = memmapfile(wavCh11,'Offset', 40, 'Format','single');
+rsnMemFile = memmapfile(rsnCh11,'Offset', 40, 'Format','single');
 
-[filtRsn2,filtRsn3] = doFilter(rsnMemFile.Data(1:5000));
-
+rsnFlitZ = doFilter(rsnMemFile.Data(1:10000));
 
 figure
 yyaxis('left')
-plot(wavMemFile.Data(1000:4500))
+plot(wavMemFile.Data(1:10000))
 yyaxis('right')
-plot((filtRsn(1000:4500).*1E13))
-
+plot(rsnMemFile.Data(1:10000))
+set(gcf,'Name','Wav(left) and Rsn(right) raw data')
 
 figure
-plot(filtRsn(2000:2500).*1E18)
-hold on
-%plot(filtRsn3(1000:4500).*1E3)
-plot(wavMemFile.Data(2000:2500),'LineWidth',2)
-hold off
+yyaxis('left')
+plot(rsnMemFile.Data(1:10000))
+yyaxis('right')
+plot(rsnFlitZ(1:10000))
+set(gcf,'Name','Rsn raw(left) and Rsn filtered(right) data')
 
 
 
-
-
-
+plotPowerSpectrum(wavMemFile.Data(1:10000),fs)
+set(gcf,'Name','Wav Data')
+plotPowerSpectrum(rsnMemFile.Data(1:10000),fs)
+set(gcf,'Name','RSn Data')
+plotPowerSpectrum(rsnMemFile.Data(1:10000),fs)
+set(gcf,'Name','RSn Filtered Data')
 
 
 

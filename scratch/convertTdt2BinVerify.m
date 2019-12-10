@@ -79,12 +79,28 @@ wavCh11 = 'ksData/Darwin/Darwin-190828-100527/SchallLab1-160315-114049_Darwin-19
 rsnCh11 = 'ksData/Darwin/Darwin-190828-100527/RSn1/Unnamed_RSn1_ch11.sev';
 wavMemFile = memmapfile(wavCh11,'Offset', 40, 'Format','single')
 rsnMemFile = memmapfile(rsnCh11,'Offset', 40, 'Format','single')
+filtRsn = bpFilter(rsnMemFile.Data(1:5000));
+
+[filtRsn2,filtRsn3] = doFilter(rsnMemFile.Data(1:5000));
+
 
 figure
 yyaxis('left')
-plot(wavMemFile.Data(1:10000))
+plot(wavMemFile.Data(1000:4500))
 yyaxis('right')
-plot(rsnMemFile.Data(1:10000))
+plot((filtRsn(1000:4500).*1E13))
+
+
+figure
+plot(filtRsn(2000:2500).*1E18)
+hold on
+%plot(filtRsn3(1000:4500).*1E3)
+plot(wavMemFile.Data(2000:2500),'LineWidth',2)
+hold off
+
+
+
+
 
 
 
